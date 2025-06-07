@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    // ESLint
+    "dbaeumer.vscode-eslint",
+    // GitLens
+    "eamodio.gitlens",
+    // Prettier
+    "esbenp.prettier-vscode",
+    // Git Graph
+    "mhutchie.git-graph"
+  ]
+}

@@ -54,15 +54,18 @@ export const VoiceChat = () => {
       setMessage("");
       setIsTyping(true);
 
-      setTimeout(() => {
-        const zundamonMessage = {
-          id: Date.now() + 1,
-          text: getRandomResponse(),
-          sender: "zundamon",
-        };
-        setMessages((prev) => [...prev, zundamonMessage]);
-        setIsTyping(false);
-      }, 1000 + Math.random() * 1000); // 1-2秒のランダムな遅延
+      setTimeout(
+        () => {
+          const zundamonMessage = {
+            id: Date.now() + 1,
+            text: getRandomResponse(),
+            sender: "zundamon",
+          };
+          setMessages((prev) => [...prev, zundamonMessage]);
+          setIsTyping(false);
+        },
+        1000 + Math.random() * 1000,
+      ); // 1-2秒のランダムな遅延
     }
   };
 

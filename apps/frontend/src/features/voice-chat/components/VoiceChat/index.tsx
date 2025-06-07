@@ -1,22 +1,68 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import styles from "./VoiceChat.module.css";
 
+const ZUNDAMON_RESPONSES = [
+  "そうなのだ！とても面白いのだ！",
+  "なるほどなのだ〜、勉強になるのだ！",
+  "ずんだもんも同じことを思っていたのだ！",
+  "それは素晴らしいアイデアなのだ！",
+  "もっと詳しく教えてほしいのだ〜",
+  "ずんだもんはそれが大好きなのだ！",
+  "とても興味深い話なのだ！",
+  "一緒に考えてみるのだ〜",
+  "それはとても大切なことなのだ！",
+  "ずんだもんも応援するのだ〜！",
+];
+
 export const VoiceChat = () => {
   const [message, setMessage] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [messages, _setMessages] = useState([
+  const [messages, setMessages] = useState([
     {
       id: 1,
       text: "こんにちはなのだ！何でも聞いてほしいのだ！",
       sender: "zundamon",
     },
   ]);
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const getRandomResponse = () => {
+    return ZUNDAMON_RESPONSES[
+      Math.floor(Math.random() * ZUNDAMON_RESPONSES.length)
+    ];
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim()) {
+      const userMessage = {
+        id: Date.now(),
+        text: message.trim(),
+        sender: "user",
+      };
+
+      setMessages((prev) => [...prev, userMessage]);
       setMessage("");
+      setIsTyping(true);
+
+      setTimeout(() => {
+        const zundamonMessage = {
+          id: Date.now() + 1,
+          text: getRandomResponse(),
+          sender: "zundamon",
+        };
+        setMessages((prev) => [...prev, zundamonMessage]);
+        setIsTyping(false);
+      }, 1000 + Math.random() * 1000); // 1-2秒のランダムな遅延
     }
   };
 
@@ -36,6 +82,23 @@ export const VoiceChat = () => {
               <div className={styles.messageContent}>{msg.text}</div>
             </div>
           ))}
+
+          {isTyping && (
+            <div className={`${styles.message} ${styles.zundamonMessage}`}>
+              <div
+                className={`${styles.messageContent} ${styles.typingIndicator}`}
+              >
+                <span className={styles.typingDots}>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </span>
+                入力中なのだ...
+              </div>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
         </div>
 
         <form className={styles.inputForm} onSubmit={handleSubmit}>
@@ -46,11 +109,12 @@ export const VoiceChat = () => {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="ずんだもんにメッセージを送るのだ..."
               className={styles.messageInput}
+              disabled={isTyping}
             />
             <button
               type="submit"
               className={styles.sendButton}
-              disabled={!message.trim()}
+              disabled={!message.trim() || isTyping}
             >
               <Send size={20} />
             </button>

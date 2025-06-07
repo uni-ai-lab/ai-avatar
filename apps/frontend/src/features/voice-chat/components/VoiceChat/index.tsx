@@ -75,12 +75,12 @@ export const VoiceChat = () => {
         <div className={styles.messagesContainer}>
           {messages.map((msg) => (
             <div
-              key={msg.id}
               className={`${styles.message} ${
                 msg.sender === "zundamon"
                   ? styles.zundamonMessage
                   : styles.userMessage
               }`}
+              key={msg.id}
             >
               <div className={styles.messageContent}>{msg.text}</div>
             </div>
@@ -107,17 +107,17 @@ export const VoiceChat = () => {
         <form className={styles.inputForm} onSubmit={handleSubmit}>
           <div className={styles.inputContainer}>
             <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="ずんだもんにメッセージを送るのだ..."
               className={styles.messageInput}
               disabled={isTyping}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="ずんだもんにメッセージを送るのだ..."
+              type="text"
+              value={message}
             />
             <button
-              type="submit"
               className={styles.sendButton}
               disabled={!message.trim() || isTyping}
+              type="submit"
             >
               <Send size={20} />
             </button>

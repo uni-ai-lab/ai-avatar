@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Send } from "lucide-react";
 import styles from "./VoiceChat.module.css";
 
 export const VoiceChat = () => {
@@ -51,19 +52,7 @@ export const VoiceChat = () => {
               className={styles.sendButton}
               disabled={!message.trim()}
             >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="m22 2-7 20-4-9-9-4Z" />
-                <path d="M22 2 11 13" />
-              </svg>
+              <Send size={20} />
             </button>
           </div>
         </form>

@@ -2,6 +2,9 @@
   "name": "ai-avatar",
   "type": "module",
   "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
   "devDependencies": {
     "@types/bun": "latest"
   },

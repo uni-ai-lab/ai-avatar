@@ -5,8 +5,16 @@
   "workspaces": [
     "apps/*"
   ],
+  "scripts": {
+    "lint": "eslint ."
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@eslint/js": "^9.28.0",
+    "@types/bun": "latest",
+    "eslint": "^9.28.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "typescript-eslint": "^8.33.1"
   },
   "peerDependencies": {
     "typescript": "^5"

@@ -195,3 +195,10 @@ components
 |
 └── ChildComponent.test.tsx # 孫以降のコンポーネントが存在しない子コンポーネントのテスト
 ```
+
+## エディタ
+VSCode の使用を想定しています。以下の拡張機能を利用しているため、インストールをお願いします。
+- 【必須】[Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+- 【必須】[ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+- 【推奨】[Git Graph](https://marketplace.visualstudio.com/items/?itemName=mhutchie.git-graph)
+- 【推奨】[GitLens](https://marketplace.visualstudio.com/items/?itemName=eamodio.gitlens)

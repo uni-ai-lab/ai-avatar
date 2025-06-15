@@ -1,6 +1,5 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { VoiceVoxError } from "./services/voicevox/errors";
 import { generateSpeech } from "./services/voicevox/generateSpeech";
 
 const app = new Hono();

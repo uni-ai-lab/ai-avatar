@@ -23,27 +23,20 @@ export const VoiceChat = () => {
   }, [messages]);
 
   const sendVoiceChat = async (message: string) => {
-    try {
-      const response = await fetch(
-        "http://localhost:8787/api/zundamon/voice-chat",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message }),
-        },
-      );
+    const response = await fetch(
+      "http://localhost:8787/api/zundamon/voice-chat",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      },
+    );
 
-      if (!response.ok) {
-        throw new Error("API request failed");
-      }
-
-      const data = await response.json();
-      return data.zundamonResponse;
-    } catch (error) {
-      console.error("API Error:", error);
-      // フォールバック用のデフォルトレスポンス
-      return "ごめんなのだ〜、ちょっと調子が悪いのだ...";
+    if (!response.ok) {
+      throw new Error("API request failed");
     }
+
+    return await response.json();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -60,11 +53,25 @@ export const VoiceChat = () => {
       setIsTyping(true);
 
       try {
-        const zundamonResponseText = await sendVoiceChat(userMessage.text);
+        const res = await sendVoiceChat(userMessage.text);
+
+        if (res.audioBase64) {
+          const audioBlob = new Blob(
+            [Uint8Array.from(atob(res.audioBase64), (c) => c.charCodeAt(0))],
+            { type: "audio/wav" },
+          );
+          const url = URL.createObjectURL(audioBlob);
+          if (url) {
+            const audioElement = new Audio(url);
+            audioElement.play().catch((error) => {
+              console.error("Audio playback error:", error);
+            });
+          }
+        }
 
         const zundamonMessage = {
           id: Date.now() + 1,
-          text: zundamonResponseText,
+          text: res.zundamonResponse,
           sender: "zundamon",
         };
         setMessages((prev) => [...prev, zundamonMessage]);

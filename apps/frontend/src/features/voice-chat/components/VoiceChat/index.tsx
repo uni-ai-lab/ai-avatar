@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { Send } from "lucide-react";
 import styles from "./VoiceChat.module.css";
 
@@ -11,7 +12,6 @@ export const VoiceChat = () => {
       sender: "zundamon",
     },
   ]);
-  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -22,8 +22,8 @@ export const VoiceChat = () => {
     scrollToBottom();
   }, [messages]);
 
-  const sendVoiceChat = async (message: string) => {
-    try {
+  const sendVoiceChatMutation = useMutation({
+    mutationFn: async (message: string) => {
       const response = await fetch(
         "http://localhost:8787/api/zundamon/voice-chat",
         {
@@ -39,16 +39,22 @@ export const VoiceChat = () => {
 
       const data = await response.json();
       return data.zundamonResponse;
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error("API Error:", error);
-      // フォールバック用のデフォルトレスポンス
-      return "ごめんなのだ〜、ちょっと調子が悪いのだ...";
-    }
-  };
+      // エラー時のフォールバック処理
+      const zundamonMessage = {
+        id: Date.now() + 1,
+        text: "ごめんなのだ〜、ちょっと調子が悪いのだ...",
+        sender: "zundamon",
+      };
+      setMessages((prev) => [...prev, zundamonMessage]);
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (message.trim()) {
+    if (message.trim() && !sendVoiceChatMutation.isPending) {
       const userMessage = {
         id: Date.now(),
         text: message.trim(),
@@ -57,28 +63,17 @@ export const VoiceChat = () => {
 
       setMessages((prev) => [...prev, userMessage]);
       setMessage("");
-      setIsTyping(true);
 
-      try {
-        const zundamonResponseText = await sendVoiceChat(userMessage.text);
-
-        const zundamonMessage = {
-          id: Date.now() + 1,
-          text: zundamonResponseText,
-          sender: "zundamon",
-        };
-        setMessages((prev) => [...prev, zundamonMessage]);
-        setIsTyping(false);
-      } catch (error) {
-        console.error("Error in handleSubmit:", error);
-        const zundamonMessage = {
-          id: Date.now() + 1,
-          text: "ごめんなのだ〜、ちょっと調子が悪いのだ...",
-          sender: "zundamon",
-        };
-        setMessages((prev) => [...prev, zundamonMessage]);
-        setIsTyping(false);
-      }
+      sendVoiceChatMutation.mutate(userMessage.text, {
+        onSuccess: (zundamonResponseText) => {
+          const zundamonMessage = {
+            id: Date.now() + 1,
+            text: zundamonResponseText,
+            sender: "zundamon",
+          };
+          setMessages((prev) => [...prev, zundamonMessage]);
+        },
+      });
     }
   };
 
@@ -99,7 +94,7 @@ export const VoiceChat = () => {
             </div>
           ))}
 
-          {isTyping && (
+          {sendVoiceChatMutation.isPending && (
             <div className={`${styles.message} ${styles.zundamonMessage}`}>
               <div
                 className={`${styles.messageContent} ${styles.typingIndicator}`}
@@ -121,7 +116,7 @@ export const VoiceChat = () => {
           <div className={styles.inputContainer}>
             <input
               className={styles.messageInput}
-              disabled={isTyping}
+              disabled={sendVoiceChatMutation.isPending}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="ずんだもんにメッセージを送るのだ..."
               type="text"
@@ -129,7 +124,7 @@ export const VoiceChat = () => {
             />
             <button
               className={styles.sendButton}
-              disabled={!message.trim() || isTyping}
+              disabled={!message.trim() || sendVoiceChatMutation.isPending}
               type="submit"
             >
               <Send size={20} />

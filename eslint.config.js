@@ -76,7 +76,9 @@ export default tseslint.config(
     },
     settings: {
       "import/resolver": {
-        typescript: true,
+        typescript: {
+          project: "apps/frontend/tsconfig.app.json",
+        },
         node: true,
       },
     },

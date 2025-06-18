@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Send } from "lucide-react";
+import { sendVoiceChat } from "features/voice-chat/api/sendVoiceChat";
 import styles from "./VoiceChat.module.css";
 
 export const VoiceChat = () => {
@@ -24,21 +25,8 @@ export const VoiceChat = () => {
 
   const sendVoiceChatMutation = useMutation({
     mutationFn: async (message: string) => {
-      const response = await fetch(
-        "http://localhost:8787/api/zundamon/voice-chat",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("API request failed");
-      }
-
-      const data = await response.json();
-      return data.zundamonResponse;
+      const response = await sendVoiceChat({ message });
+      return response.zundamonResponse;
     },
     onError: (error) => {
       console.error("API Error:", error);

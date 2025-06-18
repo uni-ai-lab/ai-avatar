@@ -1,18 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { useMutation } from "@tanstack/react-query";
 import { Send } from "lucide-react";
-import { sendVoiceChat } from "features/voice-chat/api/sendVoiceChat";
+import { useMessages } from "../../hooks/useMessages";
 import styles from "./VoiceChat.module.css";
 
 export const VoiceChat = () => {
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      text: "こんにちはなのだ！何でも聞いてほしいのだ！",
-      sender: "zundamon",
-    },
-  ]);
+  const { messages, addMessage, isAddingMessage } = useMessages();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -23,45 +16,11 @@ export const VoiceChat = () => {
     scrollToBottom();
   }, [messages]);
 
-  const sendVoiceChatMutation = useMutation({
-    mutationFn: async (message: string) => {
-      const response = await sendVoiceChat({ message });
-      return response.zundamonResponse;
-    },
-    onError: (error) => {
-      console.error("API Error:", error);
-      // エラー時のフォールバック処理
-      const zundamonMessage = {
-        id: Date.now() + 1,
-        text: "ごめんなのだ〜、ちょっと調子が悪いのだ...",
-        sender: "zundamon",
-      };
-      setMessages((prev) => [...prev, zundamonMessage]);
-    },
-  });
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (message.trim() && !sendVoiceChatMutation.isPending) {
-      const userMessage = {
-        id: Date.now(),
-        text: message.trim(),
-        sender: "user",
-      };
-
-      setMessages((prev) => [...prev, userMessage]);
+    if (message.trim() && !isAddingMessage) {
+      addMessage(message.trim());
       setMessage("");
-
-      sendVoiceChatMutation.mutate(userMessage.text, {
-        onSuccess: (zundamonResponseText) => {
-          const zundamonMessage = {
-            id: Date.now() + 1,
-            text: zundamonResponseText,
-            sender: "zundamon",
-          };
-          setMessages((prev) => [...prev, zundamonMessage]);
-        },
-      });
     }
   };
 
@@ -82,7 +41,7 @@ export const VoiceChat = () => {
             </div>
           ))}
 
-          {sendVoiceChatMutation.isPending && (
+          {isAddingMessage && (
             <div className={`${styles.message} ${styles.zundamonMessage}`}>
               <div
                 className={`${styles.messageContent} ${styles.typingIndicator}`}
@@ -104,7 +63,7 @@ export const VoiceChat = () => {
           <div className={styles.inputContainer}>
             <input
               className={styles.messageInput}
-              disabled={sendVoiceChatMutation.isPending}
+              disabled={isAddingMessage}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="ずんだもんにメッセージを送るのだ..."
               type="text"
@@ -112,7 +71,7 @@ export const VoiceChat = () => {
             />
             <button
               className={styles.sendButton}
-              disabled={!message.trim() || sendVoiceChatMutation.isPending}
+              disabled={!message.trim() || isAddingMessage}
               type="submit"
             >
               <Send size={20} />

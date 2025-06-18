@@ -7,3 +7,10 @@ export interface VoiceChatResponse {
   zundamonResponse: string;
   timestamp: string;
 }
+
+export interface Message {
+  id: number;
+  text: string;
+  sender: "user" | "zundamon";
+  timestamp?: string;
+}

@@ -9,7 +9,7 @@ export interface VoiceChatResponse {
 }
 
 export interface Message {
-  id: number;
+  id: string;
   text: string;
   sender: "user" | "zundamon";
   timestamp?: string;

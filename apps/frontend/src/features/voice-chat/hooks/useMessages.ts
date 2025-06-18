@@ -6,7 +6,7 @@ const MESSAGES_QUERY_KEY = ["voice-chat", "messages"];
 
 const getInitialMessages = (): Message[] => [
   {
-    id: 1,
+    id: "initial-message",
     text: "こんにちはなのだ！何でも聞いてほしいのだ！",
     sender: "zundamon",
   },
@@ -24,7 +24,7 @@ export const useMessages = () => {
   const addMessageMutation = useMutation({
     mutationFn: async (messageText: string) => {
       const userMessage: Message = {
-        id: Date.now(),
+        id: window.crypto.randomUUID(),
         text: messageText,
         sender: "user",
       };
@@ -39,7 +39,7 @@ export const useMessages = () => {
       const response = await sendVoiceChat({ message: messageText });
       
       const zundamonMessage: Message = {
-        id: Date.now() + 1,
+        id: window.crypto.randomUUID(),
         text: response.zundamonResponse,
         sender: "zundamon",
         timestamp: response.timestamp,
@@ -58,7 +58,7 @@ export const useMessages = () => {
       console.error("API Error:", error);
       // エラー時のフォールバック処理
       const errorMessage: Message = {
-        id: Date.now() + 1,
+        id: window.crypto.randomUUID(),
         text: "ごめんなのだ〜、ちょっと調子が悪いのだ...",
         sender: "zundamon",
       };

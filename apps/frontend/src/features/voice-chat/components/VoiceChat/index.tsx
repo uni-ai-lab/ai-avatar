@@ -1,17 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
+import { useMessages } from "../../hooks/useMessages";
 import styles from "./VoiceChat.module.css";
 
 export const VoiceChat = () => {
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      text: "こんにちはなのだ！何でも聞いてほしいのだ！",
-      sender: "zundamon",
-    },
-  ]);
-  const [isTyping, setIsTyping] = useState(false);
+  const { messages, addMessage, isAddingMessage } = useMessages();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -22,70 +16,11 @@ export const VoiceChat = () => {
     scrollToBottom();
   }, [messages]);
 
-  const sendVoiceChat = async (message: string) => {
-    const response = await fetch(
-      "http://localhost:8787/api/zundamon/voice-chat",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message }),
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error("API request failed");
-    }
-
-    return await response.json();
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (message.trim()) {
-      const userMessage = {
-        id: Date.now(),
-        text: message.trim(),
-        sender: "user",
-      };
-
-      setMessages((prev) => [...prev, userMessage]);
+    if (message.trim() && !isAddingMessage) {
+      addMessage(message.trim());
       setMessage("");
-      setIsTyping(true);
-
-      try {
-        const res = await sendVoiceChat(userMessage.text);
-
-        if (res.audioBase64) {
-          const audioBlob = new Blob(
-            [Uint8Array.from(atob(res.audioBase64), (c) => c.charCodeAt(0))],
-            { type: "audio/wav" },
-          );
-          const url = URL.createObjectURL(audioBlob);
-          if (url) {
-            const audioElement = new Audio(url);
-            audioElement.play().catch((error) => {
-              console.error("Audio playback error:", error);
-            });
-          }
-        }
-
-        const zundamonMessage = {
-          id: Date.now() + 1,
-          text: res.zundamonResponse,
-          sender: "zundamon",
-        };
-        setMessages((prev) => [...prev, zundamonMessage]);
-        setIsTyping(false);
-      } catch (error) {
-        console.error("Error in handleSubmit:", error);
-        const zundamonMessage = {
-          id: Date.now() + 1,
-          text: "ごめんなのだ〜、ちょっと調子が悪いのだ...",
-          sender: "zundamon",
-        };
-        setMessages((prev) => [...prev, zundamonMessage]);
-        setIsTyping(false);
-      }
     }
   };
 
@@ -106,7 +41,7 @@ export const VoiceChat = () => {
             </div>
           ))}
 
-          {isTyping && (
+          {isAddingMessage && (
             <div className={`${styles.message} ${styles.zundamonMessage}`}>
               <div
                 className={`${styles.messageContent} ${styles.typingIndicator}`}
@@ -128,7 +63,7 @@ export const VoiceChat = () => {
           <div className={styles.inputContainer}>
             <input
               className={styles.messageInput}
-              disabled={isTyping}
+              disabled={isAddingMessage}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="ずんだもんにメッセージを送るのだ..."
               type="text"
@@ -136,7 +71,7 @@ export const VoiceChat = () => {
             />
             <button
               className={styles.sendButton}
-              disabled={!message.trim() || isTyping}
+              disabled={!message.trim() || isAddingMessage}
               type="submit"
             >
               <Send size={20} />

@@ -13,6 +13,9 @@ export const useAudioPlayer = () => {
       const blob = new Blob([bytes], { type: "audio/wav" });
       const url = URL.createObjectURL(blob);
       const audio = new Audio(url);
+      audio.addEventListener("ended", () => {
+        URL.revokeObjectURL(url);
+      });
       audio.play().catch((e) => console.error("Audio play error:", e));
     } catch (err) {
       console.error("Failed to decode/play audio:", err);

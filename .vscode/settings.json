@@ -31,5 +31,9 @@
   "prettier.singleQuote": false,
   // TODO: ローカルの Prettier と prettier-vscode で挙動が異なる問題が解消されたら削除
   // 参考: https://zenn.dev/teppeis/scraps/c093e386614fb8
-  "prettier.trailingComma": null
+  "prettier.trailingComma": null,
+  "cSpell.words": [
+    "voicevox",
+    "zundamon"
+  ]
 }

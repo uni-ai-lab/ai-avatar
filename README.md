@@ -50,6 +50,7 @@ bun run dev
 ### バックエンド開発サーバー
 ```bash
 cd apps/backend
+docker-compose up -d # VoiceVox コンテナの起動
 bun run dev
 ```
 バックエンドは http://localhost:8787 で起動します。

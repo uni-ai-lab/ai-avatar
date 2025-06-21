@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { generateSpeech } from "./services/voicevox/generateSpeech";
 
 const app = new Hono();
 
@@ -38,15 +39,25 @@ app.post("/api/zundamon/voice-chat", async (c) => {
     return c.json({ error: "Message is required" }, 400);
   }
 
-  // ランダムな返答を選択
-  const randomIndex = Math.floor(Math.random() * ZUNDAMON_RESPONSES.length);
-  const response = ZUNDAMON_RESPONSES[randomIndex];
+  try {
+    // ランダムな返答を選択
+    const randomIndex = Math.floor(Math.random() * ZUNDAMON_RESPONSES.length);
+    const speechText = ZUNDAMON_RESPONSES[randomIndex];
 
-  return c.json({
-    userMessage: message,
-    zundamonResponse: response,
-    timestamp: new Date().toISOString(),
-  });
+    // 音声合成
+    const audioBase64 = await generateSpeech(speechText, 1);
+
+    return c.json({
+      userMessage: message,
+      zundamonResponse: speechText,
+      audioBase64: audioBase64,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error(error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return c.json({ error: "Internal server error" }, 500);
+  }
 });
 
 export default app;

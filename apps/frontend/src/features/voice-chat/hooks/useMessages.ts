@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { sendVoiceChat } from "../api/sendVoiceChat";
 import { Message, VoiceChatResponse } from "../types";
+import { useAudioPlayer } from "./useAudioPlayer";
 
 const MESSAGES_QUERY_KEY = ["voice-chat", "messages"];
 
@@ -14,6 +15,7 @@ const getInitialMessages = (): Message[] => [
 
 export const useMessages = () => {
   const queryClient = useQueryClient();
+  const { playAudio, playSorry } = useAudioPlayer();
 
   const { data: messages = [] } = useQuery({
     queryKey: MESSAGES_QUERY_KEY,
@@ -58,23 +60,7 @@ export const useMessages = () => {
       ]);
 
       // 音声再生
-      if (data.zundamonMessage.audioBase64) {
-        const audioBlob = new Blob(
-          [
-            Uint8Array.from(atob(data.zundamonMessage.audioBase64), (c) =>
-              c.charCodeAt(0),
-            ),
-          ],
-          { type: "audio/wav" },
-        );
-        const url = URL.createObjectURL(audioBlob);
-        if (url) {
-          const audioElement = new Audio(url);
-          audioElement.play().catch((error) => {
-            console.error("Audio playback error:", error);
-          });
-        }
-      }
+      playAudio(data.zundamonMessage.audioBase64);
     },
     onError: (error) => {
       console.error("API Error:", error);
@@ -88,6 +74,9 @@ export const useMessages = () => {
         ...old,
         errorMessage,
       ]);
+
+      // 音声再生
+      playSorry();
     },
   });
 

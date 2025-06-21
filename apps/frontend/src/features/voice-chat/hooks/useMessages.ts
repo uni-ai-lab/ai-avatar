@@ -9,7 +9,6 @@ const getInitialMessages = (): Message[] => [
     id: "initial-message",
     text: "こんにちはなのだ！何でも聞いてほしいのだ！",
     sender: "zundamon",
-    audioBase64: null,
   },
 ];
 
@@ -28,7 +27,6 @@ export const useMessages = () => {
         id: window.crypto.randomUUID(),
         text: messageText,
         sender: "user",
-        audioBase64: null,
       };
 
       // ユーザーメッセージを即座に追加
@@ -85,7 +83,6 @@ export const useMessages = () => {
         id: window.crypto.randomUUID(),
         text: "ごめんなのだ〜、ちょっと調子が悪いのだ...",
         sender: "zundamon",
-        audioBase64: null,
       };
       queryClient.setQueryData(MESSAGES_QUERY_KEY, (old: Message[] = []) => [
         ...old,

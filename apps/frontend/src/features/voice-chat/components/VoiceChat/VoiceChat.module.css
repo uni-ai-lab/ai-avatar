@@ -11,7 +11,35 @@
   overflow: hidden;
 }
 
+.startButtonWrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.startChatButton {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  background-color: #7cb342;
+  color: white;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(124, 179, 66, 0.4);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+.startChatButton:hover {
+  background-color: #689f38;
+  transform: translateY(-1px);
+}
+.startChatButton:active {
+  transform: translateY(0);
+}
+
+
 .chatArea {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -30,6 +58,7 @@
 .messagesContainer {
   flex: 1;
   padding: 1.5rem;
+  padding-bottom: calc(1.5rem + 48px + 1.5rem);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -118,6 +147,10 @@
 }
 
 .inputForm {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   padding: 1.5rem;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   background: rgba(255, 255, 255, 0.8);

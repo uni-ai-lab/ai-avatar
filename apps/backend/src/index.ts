@@ -56,7 +56,7 @@ app.post("/api/zundamon/voice-chat", async (c) => {
   } catch (error) {
     console.error(error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return c.json({ error: "Internal server error: " + errorMessage }, 500);
+    return c.json({ error: "Internal server error" }, 500);
   }
 });
 

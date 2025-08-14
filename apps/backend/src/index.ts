@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { generateSpeech } from "./services/voicevox/generateSpeech";
+import { generateResponse } from "./services/llmServices/chatAgent";
 
 const app = new Hono();
 
@@ -13,24 +14,11 @@ app.use(
   }),
 );
 
-const ZUNDAMON_RESPONSES = [
-  "そうなのだ！とても面白いのだ！",
-  "なるほどなのだ〜、勉強になるのだ！",
-  "ずんだもんも同じことを思っていたのだ！",
-  "それは素晴らしいアイデアなのだ！",
-  "もっと詳しく教えてほしいのだ〜",
-  "ずんだもんはそれが大好きなのだ！",
-  "とても興味深い話なのだ！",
-  "一緒に考えてみるのだ〜",
-  "それはとても大切なことなのだ！",
-  "ずんだもんも応援するのだ〜！",
-];
-
 app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-// Voice Chat API (現在はテキストのモック)
+// Voice Chat API
 app.post("/api/zundamon/voice-chat", async (c) => {
   const body = await c.req.json();
   const { message } = body;
@@ -40,9 +28,8 @@ app.post("/api/zundamon/voice-chat", async (c) => {
   }
 
   try {
-    // ランダムな返答を選択
-    const randomIndex = Math.floor(Math.random() * ZUNDAMON_RESPONSES.length);
-    const speechText = ZUNDAMON_RESPONSES[randomIndex];
+    // LLMによる回答生成
+    const speechText = await generateResponse(message)
 
     // 音声合成
     const audioBase64 = await generateSpeech(speechText, 1);

@@ -33,6 +33,8 @@ export async function generateResponse(userMessage: string) {
     text: {
       format: zodTextFormat(chatResponseSchema, "chat_response"),
     },
+    tools: [{ type: "web_search_preview" }],
+    tool_choice: "auto", // 必要に応じてweb search
   });
 
   const parsed = res.output_parsed;

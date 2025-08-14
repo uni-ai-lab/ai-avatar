@@ -1,24 +1,48 @@
 import OpenAI from "openai";
-import dotenv from 'dotenv';
+import { zodTextFormat } from "openai/helpers/zod";
+import { z } from "zod";
+import dotenv from "dotenv";
 dotenv.config();
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-const INSTRUCTIONS = "* 語尾に'なのだ'または'のだ'を付けて20字程度で回答してください\n* 回答は1つのみとしてください";
+// 回答の最大文字数定義
+const ANSWER_MAX_LENGTH = 30;
+
+const INSTRUCTIONS = `
+* 語尾に'なのだ'または'のだ'を付けて${ANSWER_MAX_LENGTH}字以内で回答してください
+* 回答は1つのみとしてください
+`;
+
 let prevId: string | undefined;
 
+// LLM回答のスキーマ定義
+const chatResponseSchema = z.object({
+  answer: z
+    .string()
+    .max(ANSWER_MAX_LENGTH)
+    .describe("ユーザーの質問に対する回答"),
+});
+
 export async function generateResponse(userMessage: string) {
-    const q = userMessage;
+  const res = await client.responses.parse({
+    model: "gpt-5-2025-08-07",
+    input: [{ role: "user", content: userMessage }],
+    previous_response_id: prevId,
+    instructions: INSTRUCTIONS,
+    text: {
+      format: zodTextFormat(chatResponseSchema, "chat_response"),
+    },
+  });
 
-    const res = await client.responses.create({
-      model: "gpt-5-2025-08-07",
-      input: [{ role: "user", content: q }],
-      previous_response_id: prevId,
-      instructions: INSTRUCTIONS,
-    });
+  const parsed = res.output_parsed;
 
-    console.log(res.output_text);
-    prevId = res.id; // 会話履歴の保持用ID
+  if (!parsed) {
+    throw new Error("LLM output does not match the schema.");
+  }
 
-    return res.output_text;
+  console.log(`generatedAnswer: ${parsed.answer}`);
+  prevId = res.id; // 会話履歴の保持用ID
+
+  return parsed.answer;
 }

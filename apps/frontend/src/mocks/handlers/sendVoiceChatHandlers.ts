@@ -17,10 +17,9 @@ export const sendVoiceChatHandlers = [
         const hours = date.getHours();
         const minute = date.getMinutes();
 
-        const num = Math.random() * 10;
-        console.log("num: ", num);
+        const dice = Math.random() * 10;
 
-        if (Math.trunc(num) == 4) {
+        if (Math.trunc(dice) === 4) {
           return HttpResponse.json({
             userMessage: message,
             zundamonResponse: "ｺﾛｼﾃ…ｺﾛｼﾃ…",

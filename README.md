@@ -70,6 +70,7 @@ bun run dev
 - `bun run build` - 本番用ビルド（TypeScript コンパイル含む）
 - `bun run preview` - 本番ビルドをプレビュー
 - `bun add <package-name>` - フロントエンド専用パッケージを追加
+- `bun run dev:mock` - モックの起動
 
 ### バックエンド（`apps/backend/`）
 - `bun run dev` - Cloudflare Workers 開発サーバー起動 (http://localhost:8787)

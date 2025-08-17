@@ -58,3 +58,7 @@
 ## API エンドポイント
 
 - `POST /api/zundamon/voice-chat` - ずんだもんにメッセージ送信、JSON レスポンスを返却
+
+## テスト戦略
+
+@docs/testing-strategy.md

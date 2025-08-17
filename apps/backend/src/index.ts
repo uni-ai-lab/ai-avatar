@@ -2,9 +2,6 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { generateSpeech } from "./services/voicevox/generateSpeech";
 import { generateResponse } from "./services/llmServices/chatAgent";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const app = new Hono();
 

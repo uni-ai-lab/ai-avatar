@@ -49,13 +49,7 @@ bun run dev
 
 ### バックエンド開発サーバー
 #### 1. OPENAI_API_KEYの設定
-* 下記の2ファイルの"your_key"の箇所にAI研究会のOPENAI_API_KEYを記載してください
-* 初回は`apps/backend/.env`を手動作成してください
-##### apps/backend/.env
-```
-OPENAI_API_KEY=your_key
-```
-
+* 下記のファイルの"your_key"の箇所にAI研究会のOPENAI_API_KEYを記載してください
 ##### apps/backend/wrangler.jsonc
 ```
 {

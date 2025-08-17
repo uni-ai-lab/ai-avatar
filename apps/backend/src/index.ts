@@ -32,7 +32,7 @@ app.post("/api/zundamon/voice-chat", async (c) => {
 
   try {
     // LLMによる回答生成
-    const speechText = await generateResponse(message)
+    const speechText = await generateResponse(message);
 
     // 音声合成
     const audioBase64 = await generateSpeech(speechText, 1);

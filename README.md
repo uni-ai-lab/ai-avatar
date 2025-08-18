@@ -48,6 +48,30 @@ bun run dev
 フロントエンドは http://localhost:5173 で起動します。
 
 ### バックエンド開発サーバー
+#### 1. OPENAI_API_KEYの設定
+* 下記のファイルの"your_key"の箇所にAI研究会のOPENAI_API_KEYを記載してください
+##### apps/backend/wrangler.jsonc
+```
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "backend",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-06-07",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "vars": {
+    "OPENAI_API_KEY": "your_key"
+  }
+
+  (※以下省略)
+
+}
+
+```
+
+
+#### 2. 起動コマンド
 ```bash
 cd apps/backend
 docker-compose up -d # VoiceVox コンテナの起動

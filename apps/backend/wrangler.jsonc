@@ -5,10 +5,7 @@
   "compatibility_date": "2025-06-07",
   "compatibility_flags": [
     "nodejs_compat"
-  ],
-  "vars": {
-    "OPENAI_API_KEY": "your_key"
-  }
+  ]
   // "kv_namespaces": [
   //   {
   //     "binding": "MY_KV_NAMESPACE",

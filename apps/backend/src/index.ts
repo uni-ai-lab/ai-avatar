@@ -1,4 +1,5 @@
-import { Hono } from "hono";
+import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { swaggerUI } from "@hono/swagger-ui";
 import { cors } from "hono/cors";
 import { generateResponse } from "./services/llmServices/chatAgent";
 import { generateSpeech } from "./services/voicevox/generateSpeech";
@@ -7,7 +8,7 @@ type Bindings = {
   OPENAI_API_KEY: string;
 };
 
-const app = new Hono<{ Bindings: Bindings }>();
+const app = new OpenAPIHono<{ Bindings: Bindings }>();
 
 app.use(
   "/*",
@@ -22,14 +23,62 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-// Voice Chat API
-app.post("/api/zundamon/voice-chat", async (c) => {
-  const body = await c.req.json();
-  const { message } = body;
+// Voice Chat Route Schema
+const voiceChatRoute = createRoute({
+  method: "post",
+  path: "/api/zundamon/voice-chat",
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: z.object({
+            message: z.string().min(1).describe("User message to Zundamon"),
+          }),
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: z.object({
+            userMessage: z.string().describe("Original user message"),
+            zundamonResponse: z.string().describe("Zundamon response text"),
+            audioBase64: z.string().describe("Base64 encoded audio"),
+            timestamp: z.string().describe("Response timestamp"),
+          }),
+        },
+      },
+      description: "Successful voice chat response",
+    },
+    400: {
+      content: {
+        "application/json": {
+          schema: z.object({
+            error: z.string(),
+          }),
+        },
+      },
+      description: "Bad request - invalid input",
+    },
+    500: {
+      content: {
+        "application/json": {
+          schema: z.object({
+            error: z.string(),
+          }),
+        },
+      },
+      description: "Internal server error",
+    },
+  },
+  tags: ["Voice Chat"],
+});
 
-  if (!message || typeof message !== "string") {
-    return c.json({ error: "Message is required" }, 400);
-  }
+// Voice Chat API Implementation
+app.openapi(voiceChatRoute, async (c) => {
+  const { message } = c.req.valid("json");
 
   try {
     // LLMによる回答生成
@@ -46,9 +95,27 @@ app.post("/api/zundamon/voice-chat", async (c) => {
     });
   } catch (error) {
     console.error(error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
     return c.json({ error: "Internal server error" }, 500);
   }
 });
+
+// OpenAPI spec endpoint
+app.doc("/doc", {
+  openapi: "3.0.0",
+  info: {
+    version: "1.0.0",
+    title: "Zundamon AI Avatar API",
+    description: "API for Zundamon AI Avatar chat application",
+  },
+  servers: [
+    {
+      url: "http://localhost:8787",
+      description: "Development server",
+    },
+  ],
+});
+
+// Swagger UI
+app.get("/ui", swaggerUI({ url: "/doc" }));
 
 export default app;

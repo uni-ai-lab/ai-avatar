@@ -16,6 +16,23 @@ describe("Backend API", () => {
     );
     
     expect(res.status).toBe(400);
-    expect(await res.json()).toEqual({ error: "Message is required" });
+    const response = await res.json();
+    expect(response).toHaveProperty("error");
+  });
+
+  it("GET /doc でOpenAPI仕様を返すこと", async () => {
+    const res = await app.request("/doc");
+    
+    expect(res.status).toBe(200);
+    const spec = await res.json();
+    expect(spec.openapi).toBe("3.0.0");
+    expect(spec.info.title).toBe("Zundamon AI Avatar API");
+  });
+
+  it("GET /ui でSwagger UIを返すこと", async () => {
+    const res = await app.request("/ui");
+    
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toMatch(/text\/html/);
   });
 });

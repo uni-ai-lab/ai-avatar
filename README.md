@@ -49,27 +49,10 @@ bun run dev
 
 ### バックエンド開発サーバー
 #### 1. OPENAI_API_KEYの設定
-* 下記のファイルの"your_key"の箇所にAI研究会のOPENAI_API_KEYを記載してください
-##### apps/backend/wrangler.jsonc
+`apps/backend/.dev.vars` ファイルを作成し、AI研究会のOPENAI_API_KEYを記載してください：
 ```
-{
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "backend",
-  "main": "src/index.ts",
-  "compatibility_date": "2025-06-07",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
-  "vars": {
-    "OPENAI_API_KEY": "your_key"
-  }
-
-  (※以下省略)
-
-}
-
+OPENAI_API_KEY=your_api_key_here
 ```
-
 
 #### 2. 起動コマンド
 ```bash
@@ -87,17 +70,23 @@ bun run dev
 - `bun run lint` - 全アプリで ESLint を実行
 - `bun run lint:fix` - ESLint エラーを自動修正
 - `bun run format` - Prettier でコードをフォーマット
+- `bun run test` - 全アプリでテストを実行
+- `bun run test:watch` - テストをウォッチモードで実行
 - `bun add <package-name>` - 共通依存関係を追加
 
 ### フロントエンド（`apps/frontend/`）
 - `bun run dev` - 開発サーバー起動 (http://localhost:5173)
 - `bun run build` - 本番用ビルド（TypeScript コンパイル含む）
 - `bun run preview` - 本番ビルドをプレビュー
+- `bun run test` - テストを実行（Vitest）
+- `bun run test:watch` - テストをウォッチモードで実行
 - `bun add <package-name>` - フロントエンド専用パッケージを追加
 - `bun run dev:mock` - モックの起動
 
 ### バックエンド（`apps/backend/`）
 - `bun run dev` - Cloudflare Workers 開発サーバー起動 (http://localhost:8787)
+- `bun run test` - テストを実行（Vitest + Cloudflare Workers 環境）
+- `bun run test:watch` - テストをウォッチモードで実行
 - `bun add <package-name>` - バックエンド専用パッケージを追加
 
 ## ディレクトリ構成

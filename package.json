@@ -8,7 +8,9 @@
   "scripts": {
     "lint": "eslint . --ext ts,tsx,js,jsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext ts,tsx,js,jsx --fix",
-    "format": "prettier --write --loglevel=warn 'apps/**/*.{js,jsx,ts,tsx,html,json}'"
+    "format": "prettier --write --loglevel=warn 'apps/**/*.{js,jsx,ts,tsx,html,json}'",
+    "test": "vitest",
+    "test:watch": "vitest --watch"
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",

@@ -2,8 +2,6 @@ import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 import { z } from "zod";
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 // 回答の最大文字数定義
 const ANSWER_MAX_LENGTH = 30;
 
@@ -22,7 +20,8 @@ const chatResponseSchema = z.object({
     .describe("ユーザーの質問に対する回答"),
 });
 
-export async function generateResponse(userMessage: string) {
+export async function generateResponse(userMessage: string, apiKey: string) {
+  const client = new OpenAI({ apiKey });
   const res = await client.responses.parse({
     model: "gpt-5-2025-08-07",
     input: [{ role: "user", content: userMessage }],

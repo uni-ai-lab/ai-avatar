@@ -1,9 +1,13 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { generateSpeech } from "./services/voicevox/generateSpeech";
 import { generateResponse } from "./services/llmServices/chatAgent";
+import { generateSpeech } from "./services/voicevox/generateSpeech";
 
-const app = new Hono();
+type Bindings = {
+  OPENAI_API_KEY: string;
+};
+
+const app = new Hono<{ Bindings: Bindings }>();
 
 app.use(
   "/*",
@@ -29,7 +33,7 @@ app.post("/api/zundamon/voice-chat", async (c) => {
 
   try {
     // LLMによる回答生成
-    const speechText = await generateResponse(message);
+    const speechText = await generateResponse(message, c.env.OPENAI_API_KEY);
 
     // 音声合成
     const audioBase64 = await generateSpeech(speechText, 1);

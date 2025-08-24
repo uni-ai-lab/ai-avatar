@@ -49,7 +49,7 @@ bun run dev
 
 ### バックエンド開発サーバー
 #### 1. OPENAI_API_KEYの設定
-`apps/backend/.env` ファイルを作成し、AI研究会のOPENAI_API_KEYを記載してください：
+`apps/backend/.dev.vars` ファイルを作成し、AI研究会のOPENAI_API_KEYを記載してください：
 ```
 OPENAI_API_KEY=your_api_key_here
 ```

@@ -284,16 +284,68 @@ export const WhisperTestPage = () => {
             </p>
           </div>
 
-          {result.audioBase64 && (
-            <div style={{ marginBottom: "10px" }}>
-              <strong>音声応答:</strong>
-              <audio 
-                controls 
-                src={`data:audio/wav;base64,${result.audioBase64}`}
-                style={{ width: "100%", marginTop: "10px" }}
-              />
-            </div>
-          )}
+          <div style={{ marginBottom: "10px" }}>
+            <strong>音声応答:</strong>
+            {result.audioBase64 ? (
+              <div>
+                <p style={{ fontSize: "14px", color: "#666", marginTop: "5px" }}>
+                  VoiceVox合成音声:
+                </p>
+                <audio 
+                  controls 
+                  src={`data:audio/wav;base64,${result.audioBase64}`}
+                  style={{ width: "100%", marginTop: "5px" }}
+                />
+              </div>
+            ) : (
+              <div style={{ marginTop: "10px" }}>
+                <p style={{ fontSize: "14px", color: "#666", marginBottom: "5px" }}>
+                  VoiceVox音声合成が利用できません。ブラウザの音声合成を使用:
+                </p>
+                <button
+                  onClick={() => {
+                    if ('speechSynthesis' in window) {
+                      const utterance = new SpeechSynthesisUtterance(result.zundamonResponse);
+                      utterance.lang = 'ja-JP';
+                      utterance.rate = 0.8;
+                      utterance.pitch = 1.2;
+                      window.speechSynthesis.speak(utterance);
+                    } else {
+                      alert('お使いのブラウザは音声合成をサポートしていません。');
+                    }
+                  }}
+                  style={{
+                    padding: "8px 15px",
+                    backgroundColor: "#17a2b8",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    marginRight: "10px"
+                  }}
+                >
+                  🔊 テキスト読み上げ
+                </button>
+                <button
+                  onClick={() => {
+                    if ('speechSynthesis' in window) {
+                      window.speechSynthesis.cancel();
+                    }
+                  }}
+                  style={{
+                    padding: "8px 15px",
+                    backgroundColor: "#6c757d",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer"
+                  }}
+                >
+                  🔇 停止
+                </button>
+              </div>
+            )}
+          </div>
           
           <div style={{ fontSize: "12px", color: "#666" }}>
             処理時刻: {new Date(result.timestamp).toLocaleString()}

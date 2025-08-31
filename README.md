@@ -62,6 +62,12 @@ bun run dev
 ```
 バックエンドは http://localhost:8787 で起動します。
 
+### Swagger UI でAPI を確認・テスト
+バックエンド開発サーバー起動後、以下の URL でAPI の仕様確認と動作テストができます：
+
+- **Swagger UI**: http://localhost:8787/ui - インタラクティブなAPI テスト画面
+- **OpenAPI 仕様**: http://localhost:8787/doc - JSON 形式の API 仕様
+
 ## 開発コマンド
 
 このプロジェクトは Bun ワークスペースを使用したモノレポです。

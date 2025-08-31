@@ -19,8 +19,8 @@ jobs:
       (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
+      pull-requests: read
       issues: read
       id-token: write
       actions: read # Required for Claude to read CI results on PRs
@@ -47,44 +47,4 @@ jobs:
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://docs.anthropic.com/en/docs/claude-code/sdk#command-line for available options
           # claude_args: '--model claude-opus-4-1-20250805 --allowed-tools Bash(gh pr:*)'
-
-      - name: Rename branch to follow project convention
-        if: github.event_name == 'issues' || github.event_name == 'issue_comment'
-        run: |
-          # Wait for Claude Code Action to complete branch creation
-          sleep 10
-          
-          # Fetch all remote branches
-          git fetch --all
-          
-          # Get the issue number
-          ISSUE_NUMBER="${{ github.event.issue.number }}"
-          
-          # Look for Claude-created branch in remote
-          CLAUDE_BRANCH=$(git branch -r | grep -E "origin/claude/issue-${ISSUE_NUMBER}-" | sed 's/.*origin\///' | head -n 1)
-          
-          if [ -n "$CLAUDE_BRANCH" ]; then
-            NEW_BRANCH="feature/#${ISSUE_NUMBER}"
-            
-            echo "Found Claude branch: $CLAUDE_BRANCH"
-            echo "Renaming to: $NEW_BRANCH"
-            
-            # Fetch the specific branch
-            git fetch origin "$CLAUDE_BRANCH"
-            
-            # Create new branch from Claude branch
-            git checkout -b "$NEW_BRANCH" "origin/$CLAUDE_BRANCH"
-            
-            # Push the new branch to remote
-            git push origin "$NEW_BRANCH"
-            
-            # Delete the old branch from remote
-            git push origin --delete "$CLAUDE_BRANCH" || true
-            
-            echo "Branch renamed successfully to $NEW_BRANCH"
-          else
-            echo "No Claude branch found for issue #${ISSUE_NUMBER}"
-            echo "Available remote branches:"
-            git branch -r | grep claude || echo "No claude branches found"
-          fi
 

@@ -18,10 +18,6 @@ app.use(
   }),
 );
 
-app.get("/", (c) => {
-  return c.text("Hello Hono!");
-});
-
 // Voice Chat API
 app.post("/api/zundamon/voice-chat", async (c) => {
   const body = await c.req.json();
@@ -46,7 +42,6 @@ app.post("/api/zundamon/voice-chat", async (c) => {
     });
   } catch (error) {
     console.error(error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
     return c.json({ error: "Internal server error" }, 500);
   }
 });

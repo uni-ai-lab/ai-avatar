@@ -9,6 +9,12 @@ bun install
 bun run dev
 ```
 
+## Swagger UI
+
+開発サーバー起動後、以下の URL でAPI を確認・テストできます：
+
+- **Swagger UI**: http://localhost:8787/ui - インタラクティブなAPI テスト画面
+- **OpenAPI 仕様**: http://localhost:8787/doc - JSON 形式の API 仕様
 
 ## デプロイ
 

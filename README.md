@@ -38,6 +38,13 @@ cd ai-avatar
 bun install
 ```
 
+### 3. Git フック (Husky) のセットアップ
+```bash
+# pre-commitフックを有効化 (コミット時のlint/format自動実行)
+chmod +x .husky/pre-commit
+git config core.hooksPath .husky
+```
+
 ## 起動
 
 ### フロントエンド開発サーバー
@@ -88,6 +95,20 @@ bun run dev
 - `bun run test` - テストを実行（Vitest + Cloudflare Workers 環境）
 - `bun run test:watch` - テストをウォッチモードで実行
 - `bun add <package-name>` - バックエンド専用パッケージを追加
+
+## Git フック（品質管理）
+
+このプロジェクトでは Husky を使用してコミット時の品質チェックを自動化しています。
+
+### Pre-commit フック
+コミット時に以下が自動実行されます：
+- **ESLint --fix**: TypeScript/JavaScript ファイルの自動修正
+- **Prettier**: コードフォーマットの統一
+- **修正不可能なESLintエラー**: コミットを阻止
+
+### 設定ファイル
+- `.husky/pre-commit`: pre-commit フックスクリプト
+- `lint-staged`: ステージされたファイルのみを対象とする設定（package.json 内）
 
 ## ディレクトリ構成
 

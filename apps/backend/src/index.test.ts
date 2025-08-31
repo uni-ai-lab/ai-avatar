@@ -16,8 +16,7 @@ describe("Backend API", () => {
     );
     
     expect(res.status).toBe(400);
-    const response = await res.json();
-    expect(response).toHaveProperty("error");
+    expect(await res.json()).toEqual({ error: "Message is required" });
   });
 
   it("GET /doc でOpenAPI仕様を返すこと", async () => {

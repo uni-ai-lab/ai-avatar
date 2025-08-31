@@ -19,8 +19,8 @@ jobs:
       (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      pull-requests: read
+      contents: write
+      pull-requests: write
       issues: read
       id-token: write
       actions: read # Required for Claude to read CI results on PRs
@@ -47,4 +47,32 @@ jobs:
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://docs.anthropic.com/en/docs/claude-code/sdk#command-line for available options
           # claude_args: '--model claude-opus-4-1-20250805 --allowed-tools Bash(gh pr:*)'
+
+      - name: Rename branch to follow project convention
+        if: github.event_name == 'issues' || github.event_name == 'issue_comment'
+        run: |
+          # Get the current branch name
+          CURRENT_BRANCH=$(git branch --show-current)
+          
+          # Check if this is a Claude-created branch for an issue
+          if [[ "$CURRENT_BRANCH" == claude/issue-* ]]; then
+            # Extract issue number from the current branch name
+            ISSUE_NUMBER="${{ github.event.issue.number }}"
+            NEW_BRANCH="feature/#${ISSUE_NUMBER}"
+            
+            echo "Renaming branch from $CURRENT_BRANCH to $NEW_BRANCH"
+            
+            # Rename the local branch
+            git branch -m "$NEW_BRANCH"
+            
+            # Push the new branch to remote
+            git push origin "$NEW_BRANCH"
+            
+            # Delete the old branch from remote
+            git push origin --delete "$CURRENT_BRANCH" || true
+            
+            echo "Branch renamed successfully to $NEW_BRANCH"
+          else
+            echo "Branch $CURRENT_BRANCH is not a Claude issue branch, skipping rename"
+          fi
 

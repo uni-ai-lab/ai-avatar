@@ -4,9 +4,6 @@
 
 echo "Setting up Husky git hooks..."
 
-# Make pre-commit hook executable
-chmod +x .husky/pre-commit
-
 # Set git core.hooksPath to use Husky hooks
 git config core.hooksPath .husky
 

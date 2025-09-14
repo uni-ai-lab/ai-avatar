@@ -65,6 +65,7 @@ const route = createRoute({
 });
 
 // Voice Chat API
+// TODO: UI 上で API の名前が Default になっているのを修正する
 app
   .openapi(route, async (c) => {
     const body = await c.req.json();
@@ -95,13 +96,14 @@ app
   .doc("/specification", {
     openapi: "3.0.0",
     info: {
-      title: "API",
+      title: "API 仕様書",
       version: "0.1.0",
     },
   })
   .get(
     "/doc",
     swaggerUI({
+      title: "Voice Chat API",
       url: "/specification",
     }),
   );

@@ -1,6 +1,6 @@
 import OpenAI from "openai";
-import { zodTextFormat } from "openai/helpers/zod";
 import { z } from "zod";
+import { zodTextFormat_wojtekmaj } from "../../utils/hoge";
 
 // 回答の最大文字数定義
 const ANSWER_MAX_LENGTH = 30;
@@ -28,7 +28,7 @@ export async function generateResponse(userMessage: string, apiKey: string) {
     previous_response_id: prevId,
     instructions: INSTRUCTIONS,
     text: {
-      format: zodTextFormat(chatResponseSchema, "chat_response"),
+      format: zodTextFormat_wojtekmaj(chatResponseSchema, "chat_response"),
     },
     tools: [{ type: "web_search_preview" }],
     tool_choice: "auto", // 必要に応じてweb search

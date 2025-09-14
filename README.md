@@ -227,3 +227,6 @@ docs/
 ├── testing-strategy.md    # テスト戦略（技術スタック選定、配置ルール）
 └── tdd-workflow.md        # Kent Beck版TDDワークフローシステムプロンプト（使用時はCLAUDE.local.mdに記述）
 ```
+
+## 開発支援
+- http://localhost:8787/doc で Swagger UI を介してバックエンドのAPIドキュメントを確認できます

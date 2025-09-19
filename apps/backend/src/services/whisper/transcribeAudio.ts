@@ -1,4 +1,4 @@
-import { WhisperClient, WhisperTranscriptionResult } from "./client";
+import { transcribeAudio as whisperTranscribeAudio, WhisperTranscriptionResult } from "./client";
 
 export async function transcribeAudio(
   audioFile: File,
@@ -9,6 +9,5 @@ export async function transcribeAudio(
     throw new Error("OPENAI_API_KEY environment variable is required");
   }
   
-  const client = new WhisperClient(apiKey);
-  return await client.transcribeAudio(audioFile);
+  return await whisperTranscribeAudio(apiKey, audioFile);
 }

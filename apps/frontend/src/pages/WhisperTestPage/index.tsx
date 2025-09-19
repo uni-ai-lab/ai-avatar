@@ -1,3 +1,4 @@
+// 動作確認用の一時ファイルのため、<#issue番号> で削除予定
 import { useState, useRef, useEffect } from "react";
 import { sendVoiceChatAudio } from "../../features/voice-chat/api/sendVoiceChatAudio";
 import type { VoiceChatAudioResponse } from "../../features/voice-chat/types";

@@ -12,9 +12,9 @@ describe("Backend API", () => {
       },
       {
         OPENAI_API_KEY: "test-api-key",
-      }
+      },
     );
-    
+
     expect(res.status).toBe(400);
     expect(await res.json()).toEqual({ error: "Message is required" });
   });

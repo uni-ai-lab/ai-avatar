@@ -7,7 +7,7 @@ export interface WhisperTranscriptionResult {
 
 export const transcribeAudio = async (
   apiKey: string,
-  audioFile: File
+  audioFile: File,
 ): Promise<WhisperTranscriptionResult> => {
   const openai = new OpenAI({
     apiKey,

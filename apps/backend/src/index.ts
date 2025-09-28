@@ -16,7 +16,7 @@ app.use(
   cors({
     origin: (origin) => {
       // originがundefined（same-origin）または localhost を含む場合は許可
-      if (!origin || origin.includes('localhost')) {
+      if (!origin || origin.includes("localhost")) {
         return origin;
       }
       return null;
@@ -141,7 +141,10 @@ app.post("/api/zundamon/voice-chat/audio", async (c) => {
     try {
       audioBase64 = await generateSpeech(speechText, 1);
     } catch (voiceError) {
-      console.warn("VoiceVox unavailable, skipping speech synthesis:", voiceError);
+      console.warn(
+        "VoiceVox unavailable, skipping speech synthesis:",
+        voiceError,
+      );
     }
 
     return c.json({
@@ -152,7 +155,6 @@ app.post("/api/zundamon/voice-chat/audio", async (c) => {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error(error);
     return c.json({ error: "Internal server error" }, 500);
   }

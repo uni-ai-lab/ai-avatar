@@ -1,4 +1,8 @@
-import { OpenAPIHono } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import {
+  voiceChatAudioRequestSchema,
+  voiceChatAudioResponseSchema,
+} from "../schemas/voiceChatAudio";
 import { generateResponse } from "../services/llmServices/chatAgent";
 import { generateSpeech } from "../services/voicevox/generateSpeech";
 import { transcribeAudio } from "../services/whisper/transcribeAudio";
@@ -9,7 +13,35 @@ type Bindings = {
 
 const app = new OpenAPIHono<{ Bindings: Bindings }>();
 
-app.post("/", async (c) => {
+const route = createRoute({
+  path: "/",
+  method: "post",
+  description: "Voice Chat with Zundamon by Audio",
+  request: {
+    body: {
+      required: true,
+      content: {
+        "multipart/form-data": {
+          schema: voiceChatAudioRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "ok",
+      content: {
+        "application/json": {
+          schema: voiceChatAudioResponseSchema,
+        },
+      },
+    },
+    400: { description: "Bad Request" },
+    500: { description: "Internal Server Error" },
+  },
+});
+
+app.openapi(route, async (c) => {
   try {
     const formData = await c.req.formData();
     const audioFile = formData.get("audio") as File | null;

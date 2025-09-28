@@ -25,9 +25,11 @@ app.use(
   }),
 );
 
+app.route("/api/zundamon/voice-chat", voiceChat);
+app.route("/api/zundamon/voice-chat/audio", voiceChatAudio);
+
 // TODO: UI 上で API の名前が Default になっているのを修正する
 app
-  .route("/api/zundamon/voice-chat", voiceChat)
   .doc("/specification", {
     openapi: "3.0.0",
     info: {
@@ -42,7 +44,5 @@ app
       url: "/specification",
     }),
   );
-
-app.route("/api/zundamon/voice-chat/audio", voiceChatAudio);
 
 export default app;

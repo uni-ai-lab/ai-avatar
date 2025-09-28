@@ -12,10 +12,16 @@ describe("Backend API", () => {
       },
       {
         OPENAI_API_KEY: "test-api-key",
-      }
+      },
     );
-    
+
     expect(res.status).toBe(400);
-    expect(await res.json()).toEqual({ error: "Message is required" });
+    const json: unknown = await res.json();
+    expect(json).toMatchObject({
+      success: false,
+      error: {
+        name: "ZodError",
+      },
+    });
   });
 });

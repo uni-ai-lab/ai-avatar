@@ -8,10 +8,13 @@ export const sendVoiceChatAudio = async (
   const formData = new FormData();
   formData.append("audio", request.audio);
 
-  const response = await fetch(`${API_BASE_URL}/api/zundamon/voice-chat/audio`, {
-    method: "POST",
-    body: formData,
-  });
+  const response = await fetch(
+    `${API_BASE_URL}/api/zundamon/voice-chat/audio`,
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
 
   if (!response.ok) {
     throw new Error("API request failed");

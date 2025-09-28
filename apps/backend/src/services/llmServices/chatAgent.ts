@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { z } from "zod";
-import { zodTextFormat_wojtekmaj } from "../../utils/hoge";
+import { zodTextFormat_wojtekmaj } from "../../utils/zodTextFormat_wojtekmaj";
 
 // 回答の最大文字数定義
 const ANSWER_MAX_LENGTH = 30;

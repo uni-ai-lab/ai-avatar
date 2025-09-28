@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { TranscriptionVerbose } from "openai/resources/audio.mjs";
 
 export interface WhisperTranscriptionResult {
   text: string;
@@ -7,14 +8,16 @@ export interface WhisperTranscriptionResult {
 
 export const transcribeAudio = async (
   apiKey: string,
-  audioFile: File
+  audioFile: File,
 ): Promise<WhisperTranscriptionResult> => {
   const openai = new OpenAI({
     apiKey,
   });
 
   try {
-    const transcription = await openai.audio.transcriptions.create({
+    const transcription: TranscriptionVerbose & {
+      _request_id?: string | null;
+    } = await openai.audio.transcriptions.create({
       file: audioFile,
       model: "whisper-1",
       response_format: "verbose_json",

@@ -134,7 +134,7 @@ app.post("/api/zundamon/voice-chat/audio", async (c) => {
     }
 
     // LLMによる回答生成
-    const speechText = await generateResponse(message);
+    const speechText = await generateResponse(message, c.env.OPENAI_API_KEY);
 
     // 音声合成（VoiceVoxが利用できない場合はスキップ）
     let audioBase64: string | null = null;

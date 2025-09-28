@@ -1,4 +1,8 @@
-import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import {
+  voiceChatRequestSchema,
+  voiceChatResponseSchema,
+} from "../schemas/voiceChat";
 import { generateResponse } from "../services/llmServices/chatAgent";
 import { generateSpeech } from "../services/voicevox/generateSpeech";
 
@@ -17,11 +21,7 @@ const route = createRoute({
       required: true,
       content: {
         "application/json": {
-          schema: z.object({
-            message: z.string().openapi({
-              example: "こんにちは",
-            }),
-          }),
+          schema: voiceChatRequestSchema,
         },
       },
     },
@@ -31,20 +31,7 @@ const route = createRoute({
       description: "ok",
       content: {
         "application/json": {
-          schema: z.object({
-            userMessage: z.string().openapi({
-              example: "こんにちは",
-            }),
-            zundamonResponse: z.string().openapi({
-              example: "こんにちは！今日はどのようにお手伝いできますか？",
-            }),
-            audioBase64: z.string().openapi({
-              example: "base64-encoded-audio",
-            }),
-            timestamp: z.string().openapi({
-              example: "2023-03-15T12:00:00Z",
-            }),
-          }),
+          schema: voiceChatResponseSchema,
         },
       },
     },
@@ -53,8 +40,6 @@ const route = createRoute({
   },
 });
 
-// Voice Chat API
-// TODO: UI 上で API の名前が Default になっているのを修正する
 app.openapi(route, async (c) => {
   const body = await c.req.json();
   const { message } = body;

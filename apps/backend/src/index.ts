@@ -25,6 +25,7 @@ app.use(
   }),
 );
 
+// TODO: UI 上で API の名前が Default になっているのを修正する
 app
   .route("/api/zundamon/voice-chat", voiceChat)
   .doc("/specification", {

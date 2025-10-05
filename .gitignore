@@ -22,6 +22,9 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .env.production.local
 .env.local
 
+# Cloudflare Workers local development
+.dev.vars
+
 # caches
 .eslintcache
 .cache
@@ -37,3 +40,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 .tool-versions
 .vite
+
+# Claude Code local configuration
+CLAUDE.local.md

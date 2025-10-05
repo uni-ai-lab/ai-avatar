@@ -1,63 +1,48 @@
-import { Hono } from "hono";
+import { swaggerUI } from "@hono/swagger-ui";
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { cors } from "hono/cors";
-import { generateSpeech } from "./services/voicevox/generateSpeech";
+import voiceChat from "./api/voiceChat";
+import voiceChatAudio from "./api/voiceChatAudio";
 
-const app = new Hono();
+type Bindings = {
+  OPENAI_API_KEY: string;
+};
+
+const app = new OpenAPIHono<{ Bindings: Bindings }>();
 
 app.use(
   "/*",
   cors({
-    origin: ["http://localhost:5173"],
+    origin: (origin) => {
+      // originがundefined（same-origin）または localhost を含む場合は許可
+      if (!origin || origin.includes("localhost")) {
+        return origin;
+      }
+      return null;
+    },
     allowMethods: ["GET", "POST"],
     allowHeaders: ["Content-Type"],
   }),
 );
 
-const ZUNDAMON_RESPONSES = [
-  "そうなのだ！とても面白いのだ！",
-  "なるほどなのだ〜、勉強になるのだ！",
-  "ずんだもんも同じことを思っていたのだ！",
-  "それは素晴らしいアイデアなのだ！",
-  "もっと詳しく教えてほしいのだ〜",
-  "ずんだもんはそれが大好きなのだ！",
-  "とても興味深い話なのだ！",
-  "一緒に考えてみるのだ〜",
-  "それはとても大切なことなのだ！",
-  "ずんだもんも応援するのだ〜！",
-];
+app.route("/api/zundamon/voice-chat", voiceChat);
+app.route("/api/zundamon/voice-chat/audio", voiceChatAudio);
 
-app.get("/", (c) => {
-  return c.text("Hello Hono!");
-});
-
-// Voice Chat API (現在はテキストのモック)
-app.post("/api/zundamon/voice-chat", async (c) => {
-  const body = await c.req.json();
-  const { message } = body;
-
-  if (!message || typeof message !== "string") {
-    return c.json({ error: "Message is required" }, 400);
-  }
-
-  try {
-    // ランダムな返答を選択
-    const randomIndex = Math.floor(Math.random() * ZUNDAMON_RESPONSES.length);
-    const speechText = ZUNDAMON_RESPONSES[randomIndex];
-
-    // 音声合成
-    const audioBase64 = await generateSpeech(speechText, 1);
-
-    return c.json({
-      userMessage: message,
-      zundamonResponse: speechText,
-      audioBase64: audioBase64,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error) {
-    console.error(error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    return c.json({ error: "Internal server error" }, 500);
-  }
-});
+// TODO: UI 上で API の名前が Default になっているのを修正する
+app
+  .doc("/specification", {
+    openapi: "3.0.0",
+    info: {
+      title: "API 仕様書",
+      version: "0.1.0",
+    },
+  })
+  .get(
+    "/doc",
+    swaggerUI({
+      title: "Voice Chat API",
+      url: "/specification",
+    }),
+  );
 
 export default app;

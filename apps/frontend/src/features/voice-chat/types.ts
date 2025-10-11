@@ -28,11 +28,3 @@ export interface Message {
   audioBase64?: string;
   timestamp?: string;
 }
-
-export interface SpeechRecognitionRequest {
-  audio: File;
-}
-
-export interface SpeechRecognitionResponse {
-  recognizedText: string;
-}

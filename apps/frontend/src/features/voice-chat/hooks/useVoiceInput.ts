@@ -1,10 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { sendVoiceChatAudio } from "../api/sendVoiceChatAudio";
 import { Message } from "../types";
 import { useAudioPlayer } from "./useAudioPlayer";
 
 type VoiceInputState = "idle" | "recording" | "processing" | "error";
+type RecordingState = "idle" | "recording";
 
 const MESSAGES_QUERY_KEY = ["voice-chat", "messages"];
 
@@ -18,14 +19,27 @@ const MESSAGES_QUERY_KEY = ["voice-chat", "messages"];
  */
 export const useVoiceInput = () => {
   const queryClient = useQueryClient();
-  const {
-    recordingState,
-    startRecording,
-    stopRecording,
-    playAudio,
-    playSorry,
-  } = useAudioPlayer();
+  const { playAudio, playSorry } = useAudioPlayer();
+  const [recordingState, setRecordingState] = useState<RecordingState>("idle");
   const [voiceInputError, setVoiceInputError] = useState<string | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+
+  const startRecording = useCallback(async (): Promise<void> => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mediaRecorder = new MediaRecorder(stream);
+    mediaRecorderRef.current = mediaRecorder;
+    audioChunksRef.current = [];
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        audioChunksRef.current.push(event.data);
+      }
+    };
+
+    mediaRecorder.start();
+    setRecordingState("recording");
+  }, []);
 
   const handleStartRecording = useCallback(async () => {
     setVoiceInputError(null);
@@ -37,6 +51,39 @@ export const useVoiceInput = () => {
       setTimeout(() => setVoiceInputError(null), 1500);
     }
   }, [startRecording]);
+
+  const stopRecording = useCallback((): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const mediaRecorder = mediaRecorderRef.current;
+
+      if (!mediaRecorder || recordingState !== "recording") {
+        reject(new Error("録音中ではありません"));
+        return;
+      }
+
+      mediaRecorder.onstop = async () => {
+        try {
+          const stream = mediaRecorder.stream;
+          stream.getTracks().forEach((track) => track.stop());
+
+          const audioBlob = new Blob(audioChunksRef.current, {
+            type: "audio/webm",
+          });
+          const audioFile = new File([audioBlob], "recording.webm", {
+            type: "audio/webm",
+          });
+
+          setRecordingState("idle");
+          resolve(audioFile);
+        } catch (err) {
+          setRecordingState("idle");
+          reject(err);
+        }
+      };
+
+      mediaRecorder.stop();
+    });
+  }, [recordingState]);
 
   const sendVoiceInputMutation = useMutation({
     mutationFn: async () => {

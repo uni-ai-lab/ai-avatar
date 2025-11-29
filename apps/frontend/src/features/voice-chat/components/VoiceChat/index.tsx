@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Send } from "lucide-react";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { useAudioPlayer } from "features/voice-chat/hooks/useAudioPlayer";
 import { useMessages } from "../../hooks/useMessages";
 import { useVoiceInput } from "../../hooks/useVoiceInput";
 import { RecordButton } from "../RecordButton";
 import styles from "./VoiceChat.module.css";
+import { voiceChatSchema, VoiceChatSchema } from "./VoiceChatSchema";
 
 interface StatusMessageProps {
   message: string;
@@ -37,12 +40,23 @@ const StatusMessage = ({
 
 export const VoiceChat = () => {
   const [chatStarted, setChatStarted] = useState(false);
-  const [message, setMessage] = useState("");
   const [displayError, setDisplayError] = useState("");
   const { messages, addMessage, isAddingMessage } = useMessages();
   const { voiceInputState, voiceInputError, startRecording, stopRecording } =
     useVoiceInput();
   const { playHello } = useAudioPlayer();
+
+  const {
+    register,
+    handleSubmit,
+    resetField,
+    formState: { errors },
+  } = useForm<VoiceChatSchema>({
+    defaultValues: {
+      message: "",
+    },
+    resolver: zodResolver(voiceChatSchema),
+  });
 
   const isRecording = voiceInputState === "recording";
   const isProcessing = voiceInputState === "processing";
@@ -71,11 +85,20 @@ export const VoiceChat = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (message.trim() && !isAddingMessage) {
-      addMessage(message.trim());
-      setMessage("");
+  useEffect(() => {
+    if (errors.message) {
+      alert(errors.message.message);
+    }
+  }, [errors.message]);
+
+  const onSubmit: SubmitHandler<VoiceChatSchema> = (data) => {
+    addMessage(data.message);
+    resetField("message");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
     }
   };
 
@@ -147,17 +170,17 @@ export const VoiceChat = () => {
           </div>
         )}
 
-        <form className={styles.inputForm} onSubmit={handleSubmit}>
+        <form className={styles.inputForm} onSubmit={handleSubmit(onSubmit)}>
           <div className={styles.inputContainer}>
             <input
+              {...register("message")}
               className={styles.messageInput}
               disabled={
                 !chatStarted || isAddingMessage || isRecording || isProcessing
               }
-              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
               placeholder="ずんだもんにメッセージを送るのだ..."
               type="text"
-              value={message}
             />
             <RecordButton
               disabled={!chatStarted || isAddingMessage}
@@ -171,8 +194,8 @@ export const VoiceChat = () => {
               className={styles.sendButton}
               disabled={
                 !chatStarted ||
-                !message.trim() ||
                 isAddingMessage ||
+                !register ||
                 isRecording ||
                 isProcessing
               }

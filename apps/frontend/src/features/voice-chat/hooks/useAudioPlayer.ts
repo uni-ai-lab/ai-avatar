@@ -1,5 +1,5 @@
 /**
- * Base64もしくは外部テキストファイルからWAV音声を再生します。
+ * 音声再生を管理します。
  * @returns
  * - playAudio - 渡されたBase64データを再生する関数
  * - playHello - 「こんにちはなのだ！何でも聞いてほしいのだ！」を再生する関数
@@ -51,5 +51,9 @@ export const useAudioPlayer = () => {
     decodeAndPlay(sorryBase64);
   };
 
-  return { playAudio, playHello, playSorry };
+  return {
+    playAudio,
+    playHello,
+    playSorry,
+  };
 };

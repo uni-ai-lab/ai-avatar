@@ -4,7 +4,7 @@ import { Send } from "lucide-react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAudioPlayer } from "features/voice-chat/hooks/useAudioPlayer";
 import { useMessages } from "../../hooks/useMessages";
-import { useSpeechRecognition } from "../../hooks/useSpeechRecognition";
+import { useVoiceInput } from "../../hooks/useVoiceInput";
 import { RecordButton } from "../RecordButton";
 import styles from "./VoiceChat.module.css";
 import { voiceChatSchema, VoiceChatSchema } from "./VoiceChatSchema";
@@ -42,17 +42,8 @@ export const VoiceChat = () => {
   const [chatStarted, setChatStarted] = useState(false);
   const [displayError, setDisplayError] = useState("");
   const { messages, addMessage, isAddingMessage } = useMessages();
-  const {
-    recordingState,
-    recognizedText,
-    recognitionError,
-    startRecording,
-    stopRecording,
-  } = useSpeechRecognition();
-
-  const isRecording = recordingState === "recording";
-  const isProcessing = recordingState === "processing";
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { voiceInputState, voiceInputError, startRecording, stopRecording } =
+    useVoiceInput();
   const { playHello } = useAudioPlayer();
 
   const {
@@ -67,21 +58,19 @@ export const VoiceChat = () => {
     resolver: zodResolver(voiceChatSchema),
   });
 
-  useEffect(() => {
-    if (recognizedText) {
-      addMessage(recognizedText);
-    }
-  }, [recognizedText, addMessage]);
+  const isRecording = voiceInputState === "recording";
+  const isProcessing = voiceInputState === "processing";
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!recognitionError) return;
+    if (!voiceInputError) return;
 
-    setDisplayError(recognitionError);
+    setDisplayError(voiceInputError);
     const timer = setTimeout(() => {
       setDisplayError("");
     }, 3000);
     return () => clearTimeout(timer);
-  }, [recognitionError]);
+  }, [voiceInputError]);
 
   const handleStartChat = () => {
     setChatStarted(true);
@@ -155,7 +144,7 @@ export const VoiceChat = () => {
               <StatusMessage
                 message={speechStatusMessage}
                 sender="user"
-                showAnimation={!recognitionError}
+                showAnimation={!voiceInputError}
               />
             )}
 
@@ -201,6 +190,7 @@ export const VoiceChat = () => {
               onStopRecording={stopRecording}
             />
             <button
+              aria-label="メッセージを送信"
               className={styles.sendButton}
               disabled={
                 !chatStarted ||

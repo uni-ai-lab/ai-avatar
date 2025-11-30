@@ -14,15 +14,15 @@ const mockStopRecording = vi.fn();
 const mockAddMessage = vi.fn();
 const mockPlayHello = vi.fn();
 const mockUseMessages = vi.fn();
-const mockUseSpeechRecognition = vi.fn();
+const mockUseVoiceInput = vi.fn();
 const mockUseAudioPlayer = vi.fn();
 
 vi.mock("../../hooks/useMessages", () => ({
   useMessages: () => mockUseMessages(),
 }));
 
-vi.mock("../../hooks/useSpeechRecognition", () => ({
-  useSpeechRecognition: () => mockUseSpeechRecognition(),
+vi.mock("../../hooks/useVoiceInput", () => ({
+  useVoiceInput: () => mockUseVoiceInput(),
 }));
 
 vi.mock("../../hooks/useAudioPlayer", () => ({
@@ -30,11 +30,10 @@ vi.mock("../../hooks/useAudioPlayer", () => ({
 }));
 
 describe("VoiceChat", () => {
-  const setupSpeechRecognition = (recordingState = "idle") => {
-    mockUseSpeechRecognition.mockReturnValue({
-      recordingState,
-      recognizedText: null,
-      recognitionError: "",
+  const setupVoiceInput = (voiceInputState = "idle") => {
+    mockUseVoiceInput.mockReturnValue({
+      voiceInputState,
+      voiceInputError: null,
       startRecording: mockStartRecording,
       stopRecording: mockStopRecording,
     });
@@ -59,7 +58,7 @@ describe("VoiceChat", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    setupSpeechRecognition();
+    setupVoiceInput();
     setupMessages();
     setupAudioPlayer();
   });
@@ -79,7 +78,7 @@ describe("VoiceChat", () => {
       });
 
       it("録音中は停止ボタンが表示される", () => {
-        setupSpeechRecognition("recording");
+        setupVoiceInput("recording");
         startChat();
         expect(
           screen.getByRole("button", { name: "録音を停止" }),
@@ -87,7 +86,7 @@ describe("VoiceChat", () => {
       });
 
       it("処理中は処理中ボタンが表示される", () => {
-        setupSpeechRecognition("processing");
+        setupVoiceInput("processing");
         startChat();
         expect(
           screen.getByRole("button", { name: "音声認識処理中" }),
@@ -97,7 +96,7 @@ describe("VoiceChat", () => {
 
     describe("ボタンの無効化", () => {
       it("処理中は録音ボタンが無効化される", () => {
-        setupSpeechRecognition("processing");
+        setupVoiceInput("processing");
         startChat();
         expect(
           screen.getByRole("button", { name: "音声認識処理中" }),
@@ -121,7 +120,7 @@ describe("VoiceChat", () => {
       });
 
       it("録音停止ボタンをクリックすると録音が停止される", () => {
-        setupSpeechRecognition("recording");
+        setupVoiceInput("recording");
         startChat();
         fireEvent.click(screen.getByRole("button", { name: "録音を停止" }));
         expect(mockStopRecording).toHaveBeenCalledOnce();
